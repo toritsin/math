@@ -39,4 +39,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: php-actions/composer@v6
+      with:
+        php_version: "7.4"
+        ssh_key: ${{ secrets.ssh_key }}
+        ssh_key_pub: ${{ secrets.ssh_key_pub }}
     - uses: php-actions/phpunit@v3
