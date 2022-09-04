@@ -20,18 +20,11 @@ jobs:
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
 
-    - name: Get composer cache directory
-      id: composer_cache
-      run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
+    - name: Cache Composer dependencies
+      uses: actions/cache@v2
       with:
-        path: ${{ steps.composer_cache.outputs.dir }}
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
+        path: /tmp/composer-cache
+        key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
@@ -43,8 +36,14 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Cache Composer dependencies
+      uses: actions/cache@v2
+      with:
+        path: /tmp/composer-cache
+        key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
 
     - name: Run tests
-      run: vendor/bin/phpunit --coverage-text
+      run: vendor/bin/phpunit
